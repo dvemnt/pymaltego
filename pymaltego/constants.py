@@ -1,0 +1,4 @@
+# coding=utf-8
+
+DEFAULT_SOFT_LIMIT = 12
+DEFAULT_HARD_LIMIT = 12
