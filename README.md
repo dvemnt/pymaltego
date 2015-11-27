@@ -42,7 +42,7 @@ xml = '''
 '''
 message = messages.TransformRequest(xml=xml)
 transform = EmailsToUsernamesTransform(message)
-print(transform.to_response().to_xml())
+print(transform.to_response().to_xml(pretty_print=True))
 
 <MaltegoMessage>
   <MaltegoTransformResponseMessage>

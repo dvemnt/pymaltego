@@ -7,12 +7,16 @@ try:
 except ImportError:
     from distutils.core import setup
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 here = path.abspath(path.dirname(__file__))
 
 packages = [
     'pymaltego'
+]
+
+requires = [
+    'lxml'
 ]
 
 with open(path.join(here, 'README.rst')) as f:
@@ -21,6 +25,8 @@ with open(path.join(here, 'README.rst')) as f:
 setup(
     name='pymaltego',
     version=VERSION,
+    packages=packages,
+    install_requires=requires,
     description='Package for developing Maltego Transforms',
     long_description=long_description,
     author='Vitalii Maslov',
