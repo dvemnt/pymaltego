@@ -154,7 +154,10 @@ class Field(XMLObject):
         """
         node = Node('Field', self.value)
         node.attrib['Name'] = self.name
-        node.attrib['DisplayName'] = self.display_name
+
+        if self.display_name is not None:
+            node.attrib['DisplayName'] = self.display_name
+
         if self.matching_rule is not None:
             node.attrib['MatchingRule'] = self.matching_rule
         return node
