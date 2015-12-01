@@ -103,7 +103,7 @@ class Label(XMLObject):
         node = Node('Label')
         node.attrib['Name'] = self.name
         node.attrib['Type'] = self.content_type
-        node.text = etree.CDATA(str(self.value))
+        node.text = etree.CDATA(self.value)
         return node
 
 

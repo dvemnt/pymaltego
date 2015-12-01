@@ -476,7 +476,7 @@ class TransformResponseTests(unittest.TestCase):
     def test_to_node(self):
         """Testing `to_node` method."""
         entity_value = 'Test'
-        entity = entities.Entity(name='Test', value=entity_value)
+        entity = entities.Entity(name='Test', value=entity_value, labels=None)
         node = messages.TransformResponse([entity]).to_node()
 
         self.assertEqual(
@@ -485,10 +485,10 @@ class TransformResponseTests(unittest.TestCase):
         )
 
     def test_to_node_with_ui_messages(self):
-        """Testing `to_node` method."""
+        """Testing `to_node` method with ui messages."""
         entity_value = 'Test'
         ui_messages = {'Key': ['Value']}
-        entity = entities.Entity(name='Test', value=entity_value)
+        entity = entities.Entity(name='Test', value=entity_value, labels=None)
         node = messages.TransformResponse(
             [entity], ui_messages
         ).to_node()
