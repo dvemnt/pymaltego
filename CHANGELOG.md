@@ -25,5 +25,6 @@ All notable changes to this project will be documented in this file.
 ## [1.0.4] - 2015-12-19 ##
 ### Added ###
 - simple output entities and response to JSON;
+
 ### Updated ###
 - empty function docstring;
