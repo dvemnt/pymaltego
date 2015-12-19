@@ -11,13 +11,13 @@ class BaseTransform(object):
         """
         Initialization class.
 
-        :param message: `messages.TransformRequest` instance.
+        :param message: `messages.MaltegoMessage` subclasses instance.
         """
-        if not isinstance(message, messages.TransformRequest):
+        if not issubclass(message.__class__, messages.MaltegoMessage):
             raise ValueError(
-                '`message` must be `messages.TransformRequest` instance.'
+                'message should be instance of'
+                ' `messages.MaltegoMessage` subclass.'
             )
-
         self.message = message
 
     def transform(self):

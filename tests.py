@@ -625,6 +625,14 @@ class BaseTransformTests(unittest.TestCase):
 
         self.assertIsInstance(transform, transforms.BaseTransform)
 
+    def test_create__JSONTransfromRequest(self):
+        """Testing create instance with JSONTransformRequest."""
+
+        message = messages.JSONTransformRequest(data='value')
+        transform = transforms.BaseTransform(message)
+
+        self.assertIsInstance(transform, transforms.BaseTransform)
+
     def test_create__wrong_message(self):
         """Testing create instance with wrong message."""
 

@@ -33,3 +33,8 @@ All notable changes to this project will be documented in this file.
 ## [1.0.5] - 2015-12-19 ##
 ### Added ###
 - input request in JSON;
+
+
+## [1.0.6] - 2015-12-19 ##
+### Updated ###
+- `transforms.BaseTransform` class takes `message.MaltegoMessage` subclasses;
