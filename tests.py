@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import unittest
+import json
 
 from lxml import etree
 
@@ -77,6 +78,13 @@ class XMLObjectTests(unittest.TestCase):
 
         with self.assertRaises(NotImplementedError):
             xml_object.to_xml()
+
+    def test_method_to_dict(self):
+        """Testing method to_dict."""
+        xml_object = entities.XMLObject()
+
+        with self.assertRaises(NotImplementedError):
+            xml_object.to_dict()
 
 
 class LabelTests(unittest.TestCase):
@@ -380,6 +388,55 @@ class EntityTests(unittest.TestCase):
             label.value, node.find('DisplayInformation').getchildren()[0].text
         )
 
+    def test_method_to_dict(self):
+        """Testing method to_dict."""
+        name = value = weight = icon_url = 'Test'
+        field = entities.Field(value=value)
+        label = entities.Label(value=value)
+        d = entities.Entity(
+            name=name, value=value, weight=weight,
+            icon_url=icon_url, fields={'Field': field}, labels={'Label': label}
+        ).to_dict()
+
+        self.assertIn(name, d)
+        self.assertIn('fields', d[name])
+        self.assertIn('Field', d[name]['fields'])
+        self.assertEqual(d[name]['fields']['Field'], value)
+
+    def test_method_to_json(self):
+        """Testing method to_dict."""
+        name = value = weight = icon_url = 'Test'
+        field = entities.Field(value=value)
+        label = entities.Label(value=value)
+        json_string = entities.Entity(
+            name=name, value=value, weight=weight,
+            icon_url=icon_url, fields={'Field': field}, labels={'Label': label}
+        ).to_json()
+
+        d = json.loads(json_string)
+
+        self.assertIn(name, d)
+        self.assertIn('fields', d[name])
+        self.assertIn('Field', d[name]['fields'])
+        self.assertEqual(d[name]['fields']['Field'], value)
+
+    def test_method_to_json__pretty_print(self):
+        """Testing method to_dict."""
+        name = value = weight = icon_url = 'Test'
+        field = entities.Field(value=value)
+        label = entities.Label(value=value)
+        json_string = entities.Entity(
+            name=name, value=value, weight=weight,
+            icon_url=icon_url, fields={'Field': field}, labels={'Label': label}
+        ).to_json(pretty_print=True)
+
+        d = json.loads(json_string)
+
+        self.assertIn(name, d)
+        self.assertIn('fields', d[name])
+        self.assertIn('Field', d[name]['fields'])
+        self.assertEqual(d[name]['fields']['Field'], value)
+
 
 class TransformRequestTests(unittest.TestCase):
 
@@ -497,6 +554,16 @@ class TransformResponseTests(unittest.TestCase):
             ui_messages['Key'][0],
             node.find('UIMessages').getchildren()[0].text
         )
+
+    def test_method_to_dict(self):
+        """Testing method to_dict."""
+        entity = entities.Entity(
+            name='Test', value='Test', labels={}, fields={}
+        )
+        d = messages.TransformResponse([entity]).to_dict()
+
+        self.assertIn('entities', d)
+        self.assertEqual(d['entities'], [entity.to_dict()])
 
     def test_to_xml(self):
         """Testing to_xml method."""

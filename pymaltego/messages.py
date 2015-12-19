@@ -36,6 +36,11 @@ class MaltegoMessage(entities.XMLObject):
         return node
 
     def to_node(self):
+        """
+        Serialize to `etree.Element` instance.
+
+        :returns: `etree.Element` instance.
+        """
         node = entities.Node(
             'Maltego{}Message'.format(self.__class__.__name__)
         )
@@ -51,9 +56,22 @@ class MaltegoMessage(entities.XMLObject):
         return node
 
     def to_xml(self, pretty_print=False):
+        """
+        Serialize to XML string.
+
+        :returns: `str` XML.
+        """
         message = entities.Node('MaltegoMessage')
         message.append(self.to_node())
         return etree.tostring(message, pretty_print=pretty_print)
+
+    def to_dict(self):
+        """
+        Serialize to `dict` instance.
+
+        :returns: `dict` instance.
+        """
+        return {'entities': [entity.to_dict() for entity in self.entities]}
 
 
 class TransformRequest(MaltegoMessage):
@@ -127,6 +145,11 @@ class TransformResponse(MaltegoMessage):
         self.entities = list(entities)
 
     def to_node(self):
+        """
+        Serialize to `etree.Element` instance.
+
+        :returns: `etree.Element` instance.
+        """
         node = super(TransformResponse, self).to_node()
 
         entities_node = entities.Node('Entities', parent=node)

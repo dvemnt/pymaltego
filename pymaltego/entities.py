@@ -1,5 +1,7 @@
 # coding=utf-8
 
+import json
+
 from lxml import etree
 
 from . import exceptions
@@ -52,10 +54,38 @@ class XMLObject(object):
             raise ValueError('Is not an `etree.Element` instance.')
 
     def to_node(self):
+        """
+        Serialize to `etree.Element` instance.
+
+        :returns: `etree.Element` instance.
+        """
         raise NotImplementedError('Object should contains method `to_node`.')
 
+    def to_dict(self):
+        """
+        Serialize to `dict` instance.
+
+        :returns: `dict` instance.
+        """
+        raise NotImplementedError('Object should contains method `to_dict`.')
+
     def to_xml(self, pretty_print=False):
+        """
+        Serialize to XML string.
+
+        :returns: `str` XML.
+        """
         return etree.tostring(self.to_node(), pretty_print=pretty_print)
+
+    def to_json(self, pretty_print=False):
+        """
+        Serialize to JSON string.
+
+        :returns: `str` JSON.
+        """
+        if pretty_print:
+            return json.dumps(self.to_dict(), sort_keys=True, indent=4)
+        return json.dumps(self.to_dict())
 
 
 class Label(XMLObject):
@@ -262,3 +292,20 @@ class Entity(XMLObject):
             Node('IconURL', value=self.icon_url, parent=node)
 
         return node
+
+    def to_dict(self):
+        """
+        Serialize to `dict` instance.
+
+        :returns: `dict` instance.
+        """
+        result = {}
+        result[self.name] = {}
+        result[self.name]['value'] = self.value
+        result[self.name]['weight'] = self.weight
+
+        result[self.name]['fields'] = {
+            key: field.value for key, field in self.fields.items()
+        }
+
+        return result
