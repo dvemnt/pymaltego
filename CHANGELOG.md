@@ -28,3 +28,8 @@ All notable changes to this project will be documented in this file.
 
 ### Updated ###
 - empty function docstring;
+
+
+## [1.0.5] - 2015-12-19 ##
+### Added ###
+- input request in JSON;

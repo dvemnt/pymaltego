@@ -519,6 +519,30 @@ class TransformRequestTests(unittest.TestCase):
             messages.TransformRequest(node=node)
 
 
+class JSONTransformRequestTests(unittest.TestCase):
+
+    """Testing `messages.JSONTransformRequest`."""
+
+    def test_create__single_values(self):
+        """Testing create instance."""
+        data = 'value'
+
+        message = messages.JSONTransformRequest(data=data)
+
+        self.assertIsInstance(message, messages.JSONTransformRequest)
+        self.assertEqual(len(message.entities), 1)
+        self.assertEqual(message.entities[0].value, data)
+
+    def test_create__few_values(self):
+        """Testing create instance."""
+        data = '["test","value"]'
+
+        message = messages.JSONTransformRequest(data=data)
+
+        self.assertIsInstance(message, messages.JSONTransformRequest)
+        self.assertEqual(len(message.entities), 2)
+
+
 class TransformResponseTests(unittest.TestCase):
 
     """Testing `messages.TransformResponse` object."""

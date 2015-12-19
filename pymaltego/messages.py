@@ -1,5 +1,7 @@
 # coding=utf-8
 
+import json
+
 from lxml import etree
 
 from . import entities, exceptions, constants
@@ -72,6 +74,38 @@ class MaltegoMessage(entities.XMLObject):
         :returns: `dict` instance.
         """
         return {'entities': [entity.to_dict() for entity in self.entities]}
+
+
+class JSONTransformRequest(MaltegoMessage):
+
+    """JSON transform request message object."""
+
+    def __init__(self, data=None):
+        """
+        Initialization object.
+
+        :param data (optional): `str` JSON data.
+        """
+        self.entities = []
+        self.fields = {}
+        self.soft_limit = constants.DEFAULT_SOFT_LIMIT
+        self.hard_limit = constants.DEFAULT_HARD_LIMIT
+
+        self.load_from_node(data)
+
+    def load_from_node(self, data):
+        """
+        Load values from data.
+
+        :param node: `str` JSON data.
+        """
+        try:
+            data = json.loads(data)
+        except:
+            data = [data]
+
+        for value in data:
+            self.entities.append(entities.Entity(value=value))
 
 
 class TransformRequest(MaltegoMessage):
