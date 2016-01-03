@@ -198,7 +198,7 @@ class Entity(XMLObject):
     """Entity base object."""
 
     def __init__(self, name='', value='', weight=None, icon_url=None,
-                 labels={}, fields={}, node=None):
+                 labels=None, fields=None, node=None):
         """
         Initialization object.
 
@@ -214,8 +214,8 @@ class Entity(XMLObject):
         self.value = value
         self.weight = weight
         self.icon_url = icon_url
-        self.fields = fields
-        self.labels = labels
+        self.fields = fields or {}
+        self.labels = labels or {}
 
         self.node = node
 

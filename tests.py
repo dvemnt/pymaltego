@@ -354,7 +354,7 @@ class EntityTests(unittest.TestCase):
         entities.Node('Label', attrib={'Name': label_name}, parent=labels)
         entity = entities.Entity(node=node)
 
-        self.assertIn(label_name, entity.fields)
+        self.assertIn(label_name, entity.labels)
 
     def test_create__with_node_icon_url(self):
         """Testing create instance with node icon url."""
@@ -582,7 +582,7 @@ class TransformResponseTests(unittest.TestCase):
     def test_method_to_dict(self):
         """Testing method to_dict."""
         entity = entities.Entity(
-            name='Test', value='Test', labels={}, fields={}
+            name='Test', value='Test'
         )
         d = messages.TransformResponse([entity]).to_dict()
 
@@ -592,7 +592,7 @@ class TransformResponseTests(unittest.TestCase):
     def test_to_xml(self):
         """Testing to_xml method."""
         entity = entities.Entity(
-            name='Test', value='Test', labels={}, fields={}
+            name='Test', value='Test'
         )
         response = messages.TransformResponse([entity])
 
