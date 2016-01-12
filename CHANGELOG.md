@@ -58,3 +58,8 @@ All notable changes to this project will be documented in this file.
 
 ### Removed ###
 - JSON support;
+
+
+## [1.1.1] - 2016-01-13 ##
+### Fixed ###
+- `transforms.BaseTransform.to_response`.

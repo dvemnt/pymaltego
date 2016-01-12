@@ -31,4 +31,4 @@ class BaseTransform(object):
 
         :returns: `messages.TransformResponse` instance.
         """
-        return messages.TransformResponse(entities=self.transform())
+        return messages.TransformResponse(self.transform())
