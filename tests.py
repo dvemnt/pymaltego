@@ -483,6 +483,24 @@ class TransformRequestTests(unittest.TestCase):
         with self.assertRaises(exceptions.MalformedMessageError):
             messages.TransformRequest.from_node(node=node)
 
+    def test_create_from_xml(self):
+        """Testing create instance from XML."""
+        xml = '''
+            <MaltegoMessage>
+              <MaltegoTransformRequestMessage>
+                <Entities>
+                  <Entity Type="EmailAddress">
+                    <Value>me@pyvim.com</Value>
+                  </Entity>
+                </Entities>
+                <Limits SoftLimit="12" HardLimit="12"/>
+              </MaltegoTransformRequestMessage>
+            </MaltegoMessage>
+        '''
+        message = messages.TransformRequest.from_xml(xml)
+
+        self.assertEqual(message.entities[0].value, 'me@pyvim.com')
+
 
 class TransformResponseTests(unittest.TestCase):
 

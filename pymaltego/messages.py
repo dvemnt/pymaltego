@@ -76,6 +76,15 @@ class TransformRequest(MaltegoMessage):
     """Maltego transform request message object."""
 
     @classmethod
+    def from_xml(cls, xml):
+        """Create object from xml.
+
+        :param xml: `str` XML.
+        :returns: `messages.TransformRequest` instance.
+        """
+        return cls.from_node(etree.fromstring(xml))
+
+    @classmethod
     def from_node(cls, node):
         """Load values from node.
 
