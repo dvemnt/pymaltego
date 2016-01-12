@@ -1,7 +1,5 @@
 # coding=utf-8
 
-import json
-
 from lxml import etree
 
 from . import entities, exceptions, constants
@@ -11,26 +9,27 @@ class MaltegoMessage(entities.XMLObject):
 
     """Maltego message object."""
 
-    def __init__(self, node=None):
-        """
-        Initialization object.
+    def __init__(self):
+        """Initialization object."""
+        self.entities = []
+        self.fields = {}
+        self.soft_limit = constants.DEFAULT_SOFT_LIMIT
+        self.hard_limit = constants.DEFAULT_HARD_LIMIT
+        self.ui_messages = []
 
-        :param node (optional): `etree.Element` instance.
-        """
-        self.ui_messages = {}
-        return super(MaltegoMessage, self).__init__(node)
-
-    def load_from_node(self, node):
-        """
-        Load values from node.
+    @classmethod
+    def from_node(cls, node):
+        """Load values from node.
 
         :param node: `etree.Element` instance.
+        :returns: `etree.Element` node.
         """
-        super(MaltegoMessage, self).load_from_node(node)
+        if not etree.iselement(node):
+            raise ValueError('Is not an `etree.Element` instance.')
 
         node = node.getchildren()[0]
 
-        if node.tag != 'Maltego{}Message'.format(self.__class__.__name__):
+        if node.tag != 'Maltego{}Message'.format(cls.__name__):
             raise exceptions.MalformedMessageError(
                 '{} is invalid MaltegoMessage Type.'.format(node.tag)
             )
@@ -38,8 +37,7 @@ class MaltegoMessage(entities.XMLObject):
         return node
 
     def to_node(self):
-        """
-        Serialize to `etree.Element` instance.
+        """Serialize to `etree.Element` instance.
 
         :returns: `etree.Element` instance.
         """
@@ -49,17 +47,15 @@ class MaltegoMessage(entities.XMLObject):
 
         if self.ui_messages:
             ui_messages = entities.Node('UIMessages', parent=node)
-            for key, value in self.ui_messages.items():
-                for message in value:
-                    entities.Node(
-                        'UIMessage', message, parent=ui_messages,
-                        attrib={'MessageType': key}
-                    )
+            for message in self.ui_messages:
+                entities.Node(
+                    'UIMessage', message['value'], parent=ui_messages,
+                    attrib={'MessageType': message['type']}
+                )
         return node
 
     def to_xml(self, pretty_print=False):
-        """
-        Serialize to XML string.
+        """Serialize to XML string.
 
         :returns: `str` XML.
         """
@@ -68,72 +64,25 @@ class MaltegoMessage(entities.XMLObject):
         return etree.tostring(message, pretty_print=pretty_print)
 
     def to_dict(self):
-        """
-        Serialize to `dict` instance.
+        """Serialize to `dict` instance.
 
         :returns: `dict` instance.
         """
         return {'entities': [entity.to_dict() for entity in self.entities]}
 
 
-class JSONTransformRequest(MaltegoMessage):
-
-    """JSON transform request message object."""
-
-    def __init__(self, data=None):
-        """
-        Initialization object.
-
-        :param data (optional): `str` JSON data.
-        """
-        self.entities = []
-        self.fields = {}
-        self.soft_limit = constants.DEFAULT_SOFT_LIMIT
-        self.hard_limit = constants.DEFAULT_HARD_LIMIT
-
-        self.load_from_node(data)
-
-    def load_from_node(self, data):
-        """
-        Load values from data.
-
-        :param node: `str` JSON data.
-        """
-        try:
-            data = json.loads(data)
-        except:
-            data = [data]
-
-        for value in data:
-            self.entities.append(entities.Entity(value=value))
-
-
 class TransformRequest(MaltegoMessage):
 
     """Maltego transform request message object."""
 
-    def __init__(self, xml=None, node=None):
-        """
-        Initialization object.
-
-        :param node (optional): `etree.Element` instance.
-        """
-        self.entities = []
-        self.fields = {}
-        self.soft_limit = constants.DEFAULT_SOFT_LIMIT
-        self.hard_limit = constants.DEFAULT_HARD_LIMIT
-
-        node = node or etree.fromstring(xml)
-
-        super(TransformRequest, self).__init__(node)
-
-    def load_from_node(self, node):
-        """
-        Load values from node.
+    @classmethod
+    def from_node(cls, node):
+        """Load values from node.
 
         :param node: `etree.Element` instance.
+        :returns: `messages.TransformRequest` instance.
         """
-        node = super(TransformRequest, self).load_from_node(node)
+        node = super(TransformRequest, cls).from_node(node)
 
         entity_nodes = node.find('Entities')
         if entity_nodes is None:
@@ -141,8 +90,10 @@ class TransformRequest(MaltegoMessage):
                 'Request requires "Entities" tag.'
             )
 
+        instance = cls()
+
         for entity in entity_nodes.getchildren():
-            self.entities.append(entities.Entity(node=entity))
+            instance.entities.append(entities.Entity.from_node(entity))
 
         fields = node.find('TransformFields')
         if fields is not None:
@@ -153,34 +104,35 @@ class TransformRequest(MaltegoMessage):
                     )
                 name = field.attrib['Name']
                 value = field.text and field.text.strip()
-                self.fields[name] = value
+                instance.fields[name] = value
 
         limit = node.find('Limits')
         if limit is not None:
-            self.soft_limit = int(
+            instance.soft_limit = int(
                 limit.attrib.get('SoftLimit', constants.DEFAULT_SOFT_LIMIT)
             )
-            self.hard_limit = int(
+            instance.hard_limit = int(
                 limit.attrib.get('HardLimit', constants.DEFAULT_SOFT_LIMIT)
             )
+
+        return instance
 
 
 class TransformResponse(MaltegoMessage):
 
     """Maltego transform response message."""
 
-    def __init__(self, entities, ui_messages={}):
-        """
-        Initialization object.
+    def __init__(self, entities_iter, ui_messages=None):
+        """Initialization object.
 
         :param entities: iterable of `entities.Entity` instances.
         """
-        self.ui_messages = ui_messages
-        self.entities = list(entities)
+        super(TransformResponse, self).__init__()
+        self.entities = list(entities_iter)
+        self.ui_messages = ui_messages or []
 
     def to_node(self):
-        """
-        Serialize to `etree.Element` instance.
+        """Serialize to `etree.Element` instance.
 
         :returns: `etree.Element` instance.
         """

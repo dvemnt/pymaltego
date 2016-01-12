@@ -7,28 +7,28 @@ try:
 except ImportError:
     from distutils.core import setup
 
-VERSION = '1.0.7'
+VERSION = '1.1.0'
 
-here = path.abspath(path.dirname(__file__))
+BASE_DIR = path.abspath(path.dirname(__file__))
 
-packages = [
+PACKAGES = [
     'pymaltego'
 ]
 
-requires = [
+REQUIRES = [
     'lxml'
 ]
 
-with open(path.join(here, 'README.rst')) as f:
-    long_description = f.read()
+with open(path.join(BASE_DIR, 'README.rst')) as f:
+    LONG_DESCRIPTION = f.read()
 
 setup(
     name='pymaltego',
     version=VERSION,
-    packages=packages,
-    install_requires=requires,
+    packages=PACKAGES,
+    install_requires=REQUIRES,
     description='Package for developing Maltego Transforms',
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     author='Vitalii Maslov',
     author_email='me@pyvim.com',
     url='https://github.com/pyvim/pymaltego',

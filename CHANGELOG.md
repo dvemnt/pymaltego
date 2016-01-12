@@ -43,3 +43,18 @@ All notable changes to this project will be documented in this file.
 ## [1.0.7] - 2016-01-03 ##
 ### Fixed ###
 - create `entities.Entity` with cached fields and labels;
+
+
+## [1.1.0] - 2016-01-12 ##
+### Added ###
+- default `DisplayName` in `entities.Field`;
+
+### Updated ###
+- fields as `list` in `entities.Field`;
+- labels as `list` in `entities.Field`;
+- ui_messages as `list` in `entities.MaltegoMessage`;
+- `load_from_node` method as class method `from_node`;
+- docstrings;
+
+### Removed ###
+- JSON support;
