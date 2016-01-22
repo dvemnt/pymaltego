@@ -63,3 +63,8 @@ All notable changes to this project will be documented in this file.
 ## [1.1.1] - 2016-01-13 ##
 ### Fixed ###
 - `transforms.BaseTransform.to_response`.
+
+
+## [1.1.2] - 2016-01-22 ##
+### Updated ###
+- auto create `DisplayName` for fields.

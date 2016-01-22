@@ -175,6 +175,20 @@ class FieldTests(unittest.TestCase):
 
         self.assertEqual(field.display_name, display_name)
 
+    def test_create__with_auto_display_name(self):
+        """Testing create instance with display name."""
+        name = value = 'test'
+        field = entities.Field(name=name, value=value)
+
+        self.assertEqual(field.display_name, 'Test')
+
+    def test_create__with_auto_display_name_multiple(self):
+        """Testing create instance with display name."""
+        name = value = 'test_case'
+        field = entities.Field(name=name, value=value)
+
+        self.assertEqual(field.display_name, 'Test Case')
+
     def test_create__with_matching_rule(self):
         """Testing create instance with matching_rule."""
         name = value = matching_rule = 'Test'

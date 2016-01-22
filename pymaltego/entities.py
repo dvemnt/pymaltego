@@ -133,9 +133,9 @@ class Field(XMLObject):
         """
         self.name = name
         self.value = value
-        self.display_name = display_name or (
-            self.name[0].upper() + self.name[1:]
-        )
+        self.display_name = display_name or ' '.join(
+            self.name.split('_')
+        ).title()
         self.matching_rule = matching_rule
 
     @classmethod
