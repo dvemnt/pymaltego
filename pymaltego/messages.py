@@ -10,7 +10,7 @@ class MaltegoMessage(entities.XMLObject):
     """Maltego message object."""
 
     def __init__(self):
-        """Initialization object."""
+        """Override initialization."""
         self.entities = []
         self.fields = {}
         self.soft_limit = constants.DEFAULT_SOFT_LIMIT
@@ -57,18 +57,12 @@ class MaltegoMessage(entities.XMLObject):
     def to_xml(self, pretty_print=False):
         """Serialize to XML string.
 
+        :param pretty_print (optional): `bool` human-readable XML.
         :returns: `str` XML.
         """
         message = entities.Node('MaltegoMessage')
         message.append(self.to_node())
         return etree.tostring(message, pretty_print=pretty_print)
-
-    def to_dict(self):
-        """Serialize to `dict` instance.
-
-        :returns: `dict` instance.
-        """
-        return {'entities': [entity.to_dict() for entity in self.entities]}
 
 
 class TransformRequest(MaltegoMessage):
@@ -132,9 +126,9 @@ class TransformResponse(MaltegoMessage):
     """Maltego transform response message."""
 
     def __init__(self, entities_iter, ui_messages=None):
-        """Initialization object.
+        """Override initialization.
 
-        :param entities: iterable of `entities.Entity` instances.
+        :param entities: iterable object of `entities.Entity` instances.
         """
         super(TransformResponse, self).__init__()
         self.entities = list(entities_iter)

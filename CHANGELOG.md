@@ -68,3 +68,14 @@ All notable changes to this project will be documented in this file.
 ## [1.1.2] - 2016-01-22 ##
 ### Updated ###
 - auto create `DisplayName` for fields.
+
+
+## [1.1.3] - 2016-02-03 ##
+### Fixed ###
+- docstrings;
+
+### Updated ###
+- auto create `DisplayName` for fields.
+
+### Removed ###
+- `to_dict` methods;

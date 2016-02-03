@@ -71,13 +71,6 @@ class XMLObjectTests(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             xml_object.to_xml()
 
-    def test_method_to_dict(self):
-        """Testing method to_dict."""
-        xml_object = entities.XMLObject()
-
-        with self.assertRaises(NotImplementedError):
-            xml_object.to_dict()
-
 
 class LabelTests(unittest.TestCase):
 
@@ -140,18 +133,6 @@ class LabelTests(unittest.TestCase):
                 '<![CDATA[{0}]]></Label>'
             ).format(name)
         )
-
-    def test_method_to_dict(self):
-        """Testing method to_dict."""
-        name = value = content_type = 'Test'
-        label_dict = entities.Label(
-            name=name, value=value, content_type=content_type
-        ).to_dict()
-
-        self.assertEqual(name, label_dict['name'])
-        self.assertEqual(value, label_dict['value'])
-        self.assertEqual(value, label_dict['value'])
-        self.assertEqual(content_type, label_dict['content_type'])
 
 
 class FieldTests(unittest.TestCase):
@@ -240,20 +221,6 @@ class FieldTests(unittest.TestCase):
                 '{0}</Field>'
             ).format(name)
         )
-
-    def test_method_to_dict(self):
-        """Testing method to_dict."""
-        name = value = display_name = matching_rule = 'Test'
-        field_dict = entities.Field(
-            name=name, value=value, display_name=display_name,
-            matching_rule=matching_rule
-        ).to_dict()
-
-        self.assertEqual(name, field_dict['name'])
-        self.assertEqual(value, field_dict['value'])
-        self.assertEqual(display_name, field_dict['display_name'])
-        self.assertEqual(display_name, field_dict['display_name'])
-        self.assertEqual(matching_rule, field_dict['matching_rule'])
 
 
 class EntityTests(unittest.TestCase):
@@ -393,21 +360,6 @@ class EntityTests(unittest.TestCase):
         self.assertIn(
             label.value, node.find('DisplayInformation').getchildren()[0].text
         )
-
-    def test_method_to_dict(self):
-        """Testing method to_dict."""
-        name = value = weight = icon_url = 'Test'
-        field = entities.Field(name=name, value=value)
-        label = entities.Label(name=name, value=value)
-        entity_dict = entities.Entity(
-            name=name, value=value, weight=weight,
-            icon_url=icon_url, fields=[field], labels=[label]
-        ).to_dict()
-
-        self.assertIn(name, entity_dict)
-        self.assertIn('fields', entity_dict[name])
-        self.assertIn(name.lower(), entity_dict[name]['fields'])
-        self.assertEqual(entity_dict[name]['fields'][name.lower()], value)
 
 
 class TransformRequestTests(unittest.TestCase):
@@ -551,16 +503,6 @@ class TransformResponseTests(unittest.TestCase):
             ui_messages[0]['value'],
             node.find('UIMessages').getchildren()[0].text
         )
-
-    def test_method_to_dict(self):
-        """Testing method to_dict."""
-        entity = entities.Entity(
-            name='Test', value='Test'
-        )
-        response_dict = messages.TransformResponse([entity]).to_dict()
-
-        self.assertIn('entities', response_dict)
-        self.assertEqual(response_dict['entities'], [entity.to_dict()])
 
     def test_to_xml(self):
         """Testing to_xml method."""

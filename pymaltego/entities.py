@@ -1,5 +1,7 @@
 # coding=utf-8
 
+import re
+
 from lxml import etree
 
 from . import exceptions
@@ -52,16 +54,10 @@ class XMLObject(object):
         """
         raise NotImplementedError('Object should contains method `to_node`.')
 
-    def to_dict(self):
-        """Serialize to `dict` instance.
-
-        :returns: `dict` instance.
-        """
-        raise NotImplementedError('Object should contains method `to_dict`.')
-
     def to_xml(self, pretty_print=False):
         """Serialize to XML string.
 
+        :param pretty_print (optional): `bool` human-readable XML.
         :returns: `str` XML.
         """
         return etree.tostring(self.to_node(), pretty_print=pretty_print)
@@ -71,11 +67,12 @@ class Label(XMLObject):
 
     """Label object."""
 
-    def __init__(self, name, value, content_type='text/html'):
+    def __init__(self, value, name='DisplayInformation',
+                 content_type='text/html'):
         """Initialization object.
 
+        :param value: label value.
         :param name (optional): label name.
-        :param value (optional): label value.
         :param content_type (optional): label content type.
         """
         self.name = name
@@ -108,16 +105,6 @@ class Label(XMLObject):
 
         return node
 
-    def to_dict(self):
-        """Serialize to `dict` instance.
-
-        :returns: `dict` instance.
-        """
-        return {
-            'name': self.name, 'value': self.value,
-            'content_type': self.content_type
-        }
-
 
 class Field(XMLObject):
 
@@ -126,15 +113,15 @@ class Field(XMLObject):
     def __init__(self, name, value, display_name=None, matching_rule=None):
         """Initialization object.
 
-        :param name (optional): field name.
-        :param value (optional): field value.
+        :param name: field name.
+        :param value: field value.
         :param display_name (optional): field display name.
         :param matching_rule (optional): field matching rule.
         """
         self.name = name
         self.value = value
         self.display_name = display_name or ' '.join(
-            self.name.split('_')
+            re.split(r'[\._\s-]', self.name)
         ).title()
         self.matching_rule = matching_rule
 
@@ -167,32 +154,21 @@ class Field(XMLObject):
 
         return node
 
-    def to_dict(self):
-        """Serialize to `dict` instance.
-
-        :returns: `dict` instance.
-        """
-        return {
-            'name': self.name, 'value': self.value,
-            'display_name': self.display_name,
-            'matching_rule': self.matching_rule
-        }
-
 
 class Entity(XMLObject):
 
     """Entity base object."""
 
     def __init__(self, name, value, weight=None, icon_url=None,
-                 labels=None, fields=None):
+                 fields=None, labels=None):
         """Initialization object.
 
-        :param name (optional): entity name.
-        :param value (optional): entity value.
-        :param weight (optional): entity weight.
-        :param icon_url (optional): entity icon url.
-        :param labels (optional): entity display information.
-        :param fields (optional): `dict` of `Field` instance.
+        :param name : `str` entity name.
+        :param value : `str` entity value.
+        :param weight (optional): `str` entity weight.
+        :param icon_url (optional): `str` entity icon url.
+        :param fields (optional): `list` fields.
+        :param labels (optional): `list` labels.
         """
         self.name = name
         self.value = value
@@ -273,19 +249,3 @@ class Entity(XMLObject):
             Node('IconURL', value=self.icon_url, parent=node)
 
         return node
-
-    def to_dict(self):
-        """Serialize to `dict` instance.
-
-        :returns: `dict` instance.
-        """
-        result = {}
-        result[self.name] = {}
-        result[self.name]['value'] = self.value
-        result[self.name]['weight'] = self.weight
-
-        result[self.name]['fields'] = {
-            field.name.lower(): field.value for field in self.fields
-        }
-
-        return result
