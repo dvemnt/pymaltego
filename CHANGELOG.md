@@ -79,3 +79,8 @@ All notable changes to this project will be documented in this file.
 
 ### Removed ###
 - `to_dict` methods;
+
+
+## [1.1.4] - 2016-02-11 ##
+### Updated ###
+- default label name.

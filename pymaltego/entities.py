@@ -67,7 +67,7 @@ class Label(XMLObject):
 
     """Label object."""
 
-    def __init__(self, value, name='DisplayInformation',
+    def __init__(self, value, name='Details',
                  content_type='text/html'):
         """Initialization object.
 
