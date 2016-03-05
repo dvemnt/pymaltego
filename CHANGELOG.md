@@ -84,3 +84,8 @@ All notable changes to this project will be documented in this file.
 ## [1.1.4] - 2016-02-11 ##
 ### Updated ###
 - default label name.
+
+
+## [1.1.5] - 2016-03-05 ##
+### Updated ###
+- convert node value to string.

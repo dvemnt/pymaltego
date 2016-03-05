@@ -20,8 +20,8 @@ class Node(object):
         """
         element = etree.Element(name, **kwargs)
 
-        if value is not None:
-            element.text = value
+        if value:
+            element.text = str(value)
 
         if parent is not None:
             parent.append(element)
