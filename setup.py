@@ -7,7 +7,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-VERSION = '1.1.5'
+VERSION = '1.1.6'
 
 BASE_DIR = path.abspath(path.dirname(__file__))
 

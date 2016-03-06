@@ -21,7 +21,10 @@ class Node(object):
         element = etree.Element(name, **kwargs)
 
         if value:
-            element.text = str(value)
+            try:
+                element.text = str(value)
+            except UnicodeEncodeError:
+                element.text = u'{}'.format(value)
 
         if parent is not None:
             parent.append(element)

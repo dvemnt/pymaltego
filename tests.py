@@ -39,6 +39,13 @@ class NodeTests(unittest.TestCase):
 
         self.assertEqual(node.getparent(), parent)
 
+    def test_create__with_unicode_value(self):
+        name = 'Test'
+        value = u'\xf3'
+        node = entities.Node(name, value=value)
+
+        self.assertTrue(etree.tostring(node))
+
 
 class XMLObjectTests(unittest.TestCase):
 
