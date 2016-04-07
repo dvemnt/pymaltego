@@ -1,0 +1,4 @@
+[report]
+exclude_lines =
+    except UnicodeEncodeError:
+        element.text = u'{}'.format(value)

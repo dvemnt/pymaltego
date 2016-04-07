@@ -1,7 +1,9 @@
-*.py[codw]
 build/
 dist/
 pymaltego.egg-info/
 __pycache__/
-run_tests.sh
+.tox/
+
+*.py[codw]
+
 .coverage
