@@ -9,7 +9,7 @@ from pymaltego import entities, exceptions, messages, transforms
 
 class NodeTests(unittest.TestCase):
 
-    """Testing `entities.Node` object."""
+    """Testing `pymaltego.entities.Node` object."""
 
     def test_create(self):
         """Testing create instance."""
@@ -49,7 +49,7 @@ class NodeTests(unittest.TestCase):
 
 class XMLObjectTests(unittest.TestCase):
 
-    """Testing `entities.XMLObject` object."""
+    """Testing `pymaltego.entities.XMLObject` object."""
 
     def test_create(self):
         """Testing create instance."""
@@ -81,7 +81,7 @@ class XMLObjectTests(unittest.TestCase):
 
 class LabelTests(unittest.TestCase):
 
-    """Testing `entities.Label` object."""
+    """Testing `pymaltego.entities.Label` object."""
 
     def test_create(self):
         """Testing create instance."""
@@ -144,7 +144,7 @@ class LabelTests(unittest.TestCase):
 
 class FieldTests(unittest.TestCase):
 
-    """Testing `entities.Field` object."""
+    """Testing `pymaltego.entities.Field` object."""
 
     def test_create(self):
         """Testing create instance with name."""
@@ -232,7 +232,7 @@ class FieldTests(unittest.TestCase):
 
 class EntityTests(unittest.TestCase):
 
-    """Testing `entities.Entity` object."""
+    """Testing `pymaltego.entities.Entity` object."""
 
     def test_create(self):
         """Testing create instance."""
@@ -371,7 +371,7 @@ class EntityTests(unittest.TestCase):
 
 class TransformRequestTests(unittest.TestCase):
 
-    """Testing `messages.TransformRequest`."""
+    """Testing `pymaltego.messages.TransformRequest`."""
 
     def test_create(self):
         """Testing create instance."""
@@ -477,7 +477,7 @@ class TransformRequestTests(unittest.TestCase):
 
 class TransformResponseTests(unittest.TestCase):
 
-    """Testing `messages.TransformResponse` object."""
+    """Testing `pymaltego.messages.TransformResponse` object."""
 
     def test_create(self):
         """Testing create instance with entities."""
@@ -485,6 +485,36 @@ class TransformResponseTests(unittest.TestCase):
         response = messages.TransformResponse(entities_iter)
 
         self.assertEqual(response.entities, entities_iter)
+
+    def test_from_node(self):
+        """Testing create instance from node."""
+        node = entities.Node('MaltegoMessage')
+        request = entities.Node('MaltegoTransformResponseMessage', parent=node)
+        entities_node = entities.Node('Entities', parent=request)
+        entity = entities.Node(
+            'Entity', 'Test', attrib={'Type': 'Test'}, parent=entities_node
+        )
+        entities.Node('Value', value='Test', parent=entity)
+        ui_messages_node = entities.Node('UIMessages', parent=request)
+        entities.Node(
+            'UIMessage', 'Test', attrib={'MessageType': 'Test'},
+            parent=ui_messages_node
+        )
+
+        instance = messages.TransformResponse.from_node(node)
+
+        self.assertIsInstance(instance, messages.TransformResponse)
+        self.assertEqual(instance.entities[0].value, 'Test')
+        self.assertEqual(instance.ui_messages[0].value, 'Test')
+
+    def test_from_node__without_entities(self):
+        """Testing create instance from node."""
+        node = entities.Node('MaltegoMessage')
+        request = entities.Node('MaltegoTransformResponseMessage', parent=node)
+        entities.Node('Entitie', parent=request)
+
+        with self.assertRaises(exceptions.MalformedMessageError):
+            messages.TransformResponse.from_node(node)
 
     def test_to_node(self):
         """Testing `to_node` method."""
@@ -500,14 +530,14 @@ class TransformResponseTests(unittest.TestCase):
     def test_to_node_with_ui_messages(self):
         """Testing `to_node` method with ui messages."""
         entity_value = 'Test'
-        ui_messages = [{'type': 'Type', 'value': 'Value'}]
+        ui_messages = [entities.UIMessage('Test', 'Test')]
         entity = entities.Entity(name='Test', value=entity_value, labels=None)
         node = messages.TransformResponse(
             [entity], ui_messages
         ).to_node()
 
         self.assertEqual(
-            ui_messages[0]['value'],
+            ui_messages[0].value,
             node.find('UIMessages').getchildren()[0].text
         )
 
@@ -530,7 +560,7 @@ class TransformResponseTests(unittest.TestCase):
 
 class BaseTransformTests(unittest.TestCase):
 
-    """Testsing `transforms.BaseTransform`."""
+    """Testing `pymaltego.transforms.BaseTransform`."""
 
     def test_create(self):
         """Testing create instance."""
@@ -584,6 +614,29 @@ class BaseTransformTests(unittest.TestCase):
 
         with self.assertRaises(NotImplementedError):
             transform.to_response()
+
+
+class UIMessageTests(unittest.TestCase):
+
+    """Testing `pymaltego.entities.UIMessage`."""
+
+    def test_from_node(self):
+        """Testing create instance from node."""
+        node = entities.Node('UIMessage', 'Test', attrib={'MessageType': 'ts'})
+        instance = entities.UIMessage.from_node(node)
+
+        self.assertIsInstance(instance, entities.UIMessage)
+        self.assertEqual(instance.value, 'Test')
+        self.assertEqual(instance.message_type, 'ts')
+
+    def test_to_xml(self):
+        """Testing convert instance to XML."""
+        instance = entities.UIMessage('Test', 'Test')
+
+        self.assertEqual(
+            instance.to_xml().decode('ascii'),
+            '<UIMessage MessageType="Test">Test</UIMessage>'
+        )
 
 if __name__ == '__main__':
     unittest.main()

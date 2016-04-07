@@ -1,9 +1,16 @@
 # coding=utf-8
 
 
-class MalformedEntityError(Exception):
+class PyMaltegoException(Exception):
+
+    """Base exception class."""
+
     pass
 
 
-class MalformedMessageError(Exception):
+class MalformedEntityError(PyMaltegoException):
+    pass
+
+
+class MalformedMessageError(PyMaltegoException):
     pass

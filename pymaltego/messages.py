@@ -2,10 +2,11 @@
 
 from lxml import etree
 
-from . import entities, exceptions, constants
+from pymaltego import exceptions, constants
+from pymaltego.entities import XMLObject, Node, Entity, UIMessage
 
 
-class MaltegoMessage(entities.XMLObject):
+class MaltegoMessage(XMLObject):
 
     """Maltego message object."""
 
@@ -41,17 +42,15 @@ class MaltegoMessage(entities.XMLObject):
 
         :returns: `etree.Element` instance.
         """
-        node = entities.Node(
+        node = Node(
             'Maltego{}Message'.format(self.__class__.__name__)
         )
 
         if self.ui_messages:
-            ui_messages = entities.Node('UIMessages', parent=node)
+            ui_messages = Node('UIMessages', parent=node)
             for message in self.ui_messages:
-                entities.Node(
-                    'UIMessage', message['value'], parent=ui_messages,
-                    attrib={'MessageType': message['type']}
-                )
+                ui_messages.append(message.to_node())
+
         return node
 
     def to_xml(self, pretty_print=False):
@@ -60,7 +59,7 @@ class MaltegoMessage(entities.XMLObject):
         :param pretty_print (optional): `bool` human-readable XML.
         :returns: `str` XML.
         """
-        message = entities.Node('MaltegoMessage')
+        message = Node('MaltegoMessage')
         message.append(self.to_node())
         return etree.tostring(message, pretty_print=pretty_print)
 
@@ -96,7 +95,7 @@ class TransformRequest(MaltegoMessage):
         instance = cls()
 
         for entity in entity_nodes.getchildren():
-            instance.entities.append(entities.Entity.from_node(entity))
+            instance.entities.append(Entity.from_node(entity))
 
         fields = node.find('TransformFields')
         if fields is not None:
@@ -125,14 +124,41 @@ class TransformResponse(MaltegoMessage):
 
     """Maltego transform response message."""
 
-    def __init__(self, entities_iter, ui_messages=None):
-        """Override initialization.
+    def __init__(self, entities, ui_messages=None):
+        """Override initialization instance.
 
-        :param entities: iterable object of `entities.Entity` instances.
+        :param entities: `list` `entities.Entity` instances.
+        :param ui_messages: `list` UI messages.
         """
         super(TransformResponse, self).__init__()
-        self.entities = list(entities_iter)
+        self.entities = entities
         self.ui_messages = ui_messages or []
+
+    @classmethod
+    def from_node(cls, node):
+        """Load values from node.
+
+        :param node: `etree.Element` instance.
+        :returns: `messages.TransformResponse` instance.
+        """
+        node = super(TransformResponse, cls).from_node(node)
+
+        entity_nodes = node.find('Entities')
+        if entity_nodes is None:
+            raise exceptions.MalformedMessageError(
+                'Request requires "Entities" tag.'
+            )
+
+        entities = []
+        for entity in entity_nodes.getchildren():
+            entities.append(Entity.from_node(entity))
+
+        ui_messages = []
+        message_nodes = node.find('UIMessages')
+        for message in message_nodes.getchildren():
+            ui_messages.append(UIMessage.from_node(message))
+
+        return cls(entities, ui_messages)
 
     def to_node(self):
         """Serialize to `etree.Element` instance.
@@ -141,7 +167,7 @@ class TransformResponse(MaltegoMessage):
         """
         node = super(TransformResponse, self).to_node()
 
-        entities_node = entities.Node('Entities', parent=node)
+        entities_node = Node('Entities', parent=node)
         for entity in self.entities:
             entities_node.append(entity.to_node())
 

@@ -9,13 +9,13 @@ from . import exceptions
 
 class Node(object):
 
-    """Node object."""
+    """Node factory."""
 
     def __new__(cls, name, value=None, parent=None, **kwargs):
-        """Create object.
+        """Override create instance.
 
         :param name: name of node.
-        :param value (optional): text of node.
+        :param value (optional): `str` text of node.
         :param parent (optional): `etree.Element` instance parent of node.
         """
         element = etree.Element(name, **kwargs)
@@ -70,13 +70,12 @@ class Label(XMLObject):
 
     """Label object."""
 
-    def __init__(self, value, name='Details',
-                 content_type='text/html'):
-        """Initialization object.
+    def __init__(self, value, name='Details', content_type='text/html'):
+        """Override initialization instance.
 
-        :param value: label value.
-        :param name (optional): label name.
-        :param content_type (optional): label content type.
+        :param value: `str` label value.
+        :param name (optional): `str` label name.
+        :param content_type (optional): `str` label content type.
         """
         self.name = name
         self.value = value
@@ -114,12 +113,12 @@ class Field(XMLObject):
     """Field object."""
 
     def __init__(self, name, value, display_name=None, matching_rule=None):
-        """Initialization object.
+        """Override initialization instance.
 
-        :param name: field name.
-        :param value: field value.
-        :param display_name (optional): field display name.
-        :param matching_rule (optional): field matching rule.
+        :param name: `str` field name.
+        :param value: `str` field value.
+        :param display_name (optional): `str` field display name.
+        :param matching_rule (optional): `str` field matching rule.
         """
         self.name = name
         self.value = value
@@ -164,7 +163,7 @@ class Entity(XMLObject):
 
     def __init__(self, name, value, weight=None, icon_url=None,
                  fields=None, labels=None):
-        """Initialization object.
+        """Override initialization instance.
 
         :param name : `str` entity name.
         :param value : `str` entity value.
@@ -198,7 +197,7 @@ class Entity(XMLObject):
         if value is None:
             raise exceptions.MalformedEntityError('Missing "Value" tag.')
 
-        value = value.text and value.text.strip()
+        value = value.text.strip() if value.text else ''
 
         instance = cls(name, value)
 
@@ -250,5 +249,44 @@ class Entity(XMLObject):
 
         if self.icon_url:
             Node('IconURL', value=self.icon_url, parent=node)
+
+        return node
+
+
+class UIMessage(XMLObject):
+
+    """UI message object."""
+
+    def __init__(self, value, message_type):
+        """Override initialization instance.
+
+        :param value: `str` label value.
+        :param message_type: `str` message type.
+        """
+        self.value = value
+        self.message_type = message_type
+
+    @classmethod
+    def from_node(cls, node):
+        """Load values from node.
+
+        :param node: `etree.Element` instance.
+        :returns: `entities.Label` instance.
+        """
+        super(UIMessage, cls).from_node(node)
+
+        return cls(
+            node.text.strip(), node.attrib['MessageType']
+        )
+
+    def to_node(self):
+        """Serialize to `etree.Element` instance.
+
+        :returns: `etree.Element` instance.
+        """
+        node = Node(self.__class__.__name__)
+
+        node.attrib['MessageType'] = self.message_type
+        node.text = self.value
 
         return node
