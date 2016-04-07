@@ -94,3 +94,11 @@ All notable changes to this project will be documented in this file.
 ## [1.1.6] - 2016-03-05 ##
 ### Updated ###
 - fixed problem with encoding node value.
+
+## [1.2.0] - 2016-04-07 ##
+## Added ##
+- `UIMessage` entity;
+- `from_node` method for `TransformResponse` class;
+
+### Updated ###
+- docstrings.
